@@ -41,6 +41,7 @@
     <Compile Include="DemoIndex.cs" />
     <Compile Include="DemoEditingAdvanced.cs" />
     <Compile Include="DemoInsets.cs" />
+    <Compile Include="DemoReflectionExtention.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="monodevelop-32.png" />

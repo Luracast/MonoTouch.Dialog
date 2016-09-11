@@ -385,7 +385,7 @@ namespace MonoTouch.Dialog
 							break;
 						}
 					}
-				} else {
+				} else if ((element = BuildElementForType(mType, caption, GetValue(mi, o), attrs, callbacks)) == null) {
 					var nested = GetValue (mi, o);
 					if (nested != null){
 						var newRoot = new RootElement (caption);
@@ -400,6 +400,11 @@ namespace MonoTouch.Dialog
 				mappings [element] = new MemberAndInstance (mi, o);
 			}
 			root.Add (section);
+		}
+
+		public virtual Element BuildElementForType(Type mType, string Caption, object Value, object[] attrs, object callbacks)
+		{
+			return null;
 		}
 		
 		class MemberRadioGroup : RadioGroup {
@@ -458,8 +463,19 @@ namespace MonoTouch.Dialog
 						
 						SetValue (mi, obj, fi.GetValue (null));
 					}
+					else {
+						object Value;
+						if (FetchElementValue(element, out Value))
+							SetValue(mi, obj, Value);
+					}
 				}
 			}
 		}
+		public virtual bool FetchElementValue(Element element, out object Value)
+		{
+			Value = null;
+			return false;
+		}
 	}
+
 }

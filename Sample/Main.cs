@@ -66,7 +66,8 @@ namespace Sample
 					new JsonElement ("Load from URL", "file://" + Path.GetFullPath ("sample.json"))
 				},
 				new Section ("Auto-mapped", footer){
-					new StringElement ("Reflection API", DemoReflectionApi)
+					new StringElement ("Reflection API", DemoReflectionApi),
+					new StringElement ("Reflection Extension API", DemoReflectionExtensionApi)
 				},
 			};
 			
