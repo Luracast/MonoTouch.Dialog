@@ -237,6 +237,14 @@ namespace MonoTouch.Dialog
 			TextAlignment = UITextAlignment.Right;
 		}
 
+		public FloatEntryElement(string caption, float value, string placeholder) : base(caption)
+		{
+			Value = value;
+			this.placeholder = placeholder;
+			KeyboardType = UIKeyboardType.DecimalPad;
+			TextAlignment = UITextAlignment.Right;
+		}
+
 		/// <summary>
 		/// Constructs an EntryElement for password entry with the given caption, placeholder and initial value.
 		/// </summary>

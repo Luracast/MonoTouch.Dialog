@@ -26,7 +26,7 @@ namespace Sample
 		
 		[Element(typeof(FloatEntryElement))]
 		public float Cost = 22f;
-		[Element(typeof(FloatEntryElement))]
+		[Element(typeof(FloatEntryElement),"Money goes here")]
 		public float TotalCost = 322f;
 
 	[Section]

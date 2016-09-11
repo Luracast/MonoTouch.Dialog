@@ -31,11 +31,13 @@ namespace MonoTouch.Dialog
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
 	public class ElementAttribute : Attribute
 	{
-		public ElementAttribute(Type customType)
+		public ElementAttribute(Type customType, params object[] parameters)
 		{
 			CustomType = customType;
+			Parameters = parameters;
 		}
 		public Type CustomType;
+		public object[] Parameters;
 	}
 
 	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
@@ -250,8 +252,16 @@ namespace MonoTouch.Dialog
 					else if (attr is ElementAttribute)
 					{
 						skip = true;
-						string nm = caption ?? MakeCaption(mi.Name);
-						element = (Element) Activator.CreateInstance(((ElementAttribute)attr).CustomType, nm, GetValue(mi, o));
+						caption = caption ?? MakeCaption(mi.Name);
+						List<object> parameters = new List<object>();
+						parameters.Insert(0, caption);
+						parameters.Insert(1, GetValue(mi, o));
+						object[] customParams = ((ElementAttribute)attr).Parameters;
+						if (customParams != null)
+						{
+							parameters.AddRange(customParams);
+						}
+						element = (Element) Activator.CreateInstance(((ElementAttribute)attr).CustomType, parameters.ToArray());
 						if (element != null)
 						{
 							if (section == null)
