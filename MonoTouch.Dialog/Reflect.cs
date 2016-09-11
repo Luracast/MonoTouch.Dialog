@@ -28,6 +28,16 @@ using MonoTouch.Foundation;
 
 namespace MonoTouch.Dialog
 {
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
+	public class ElementAttribute : Attribute
+	{
+		public ElementAttribute(Type customType)
+		{
+			CustomType = customType;
+		}
+		public Type CustomType;
+	}
+
 	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
 	public class EntryAttribute : Attribute {
 		public EntryAttribute () : this (null) { }
@@ -221,7 +231,7 @@ namespace MonoTouch.Dialog
 
 				if (mType == null)
 					continue;
-
+				Element element = null;
 				string caption = null;
 				object [] attrs = mi.GetCustomAttributes (false);
 				bool skip = false;
@@ -229,12 +239,26 @@ namespace MonoTouch.Dialog
 					if (attr is SkipAttribute || attr is System.Runtime.CompilerServices.CompilerGeneratedAttribute)
 						skip = true;
 					else if (attr is CaptionAttribute)
-						caption = ((CaptionAttribute) attr).Caption;
-					else if (attr is SectionAttribute){
+						caption = ((CaptionAttribute)attr).Caption;
+					else if (attr is SectionAttribute)
+					{
 						if (section != null)
-							root.Add (section);
+							root.Add(section);
 						var sa = attr as SectionAttribute;
-						section = new Section (sa.Caption, sa.Footer);
+						section = new Section(sa.Caption, sa.Footer);
+					}
+					else if (attr is ElementAttribute)
+					{
+						skip = true;
+						string nm = caption ?? MakeCaption(mi.Name);
+						element = (Element) Activator.CreateInstance(((ElementAttribute)attr).CustomType, nm, GetValue(mi, o));
+						if (element != null)
+						{
+							if (section == null)
+								section = new Section();
+							section.Add(element);
+							mappings[element] = new MemberAndInstance(mi, o);
+						}
 					}
 				}
 				if (skip)
@@ -246,7 +270,7 @@ namespace MonoTouch.Dialog
 				if (section == null)
 					section = new Section ();
 				
-				Element element = null;
+
 				if (mType == typeof (string)){
 					PasswordAttribute pa = null;
 					AlignmentAttribute align = null;

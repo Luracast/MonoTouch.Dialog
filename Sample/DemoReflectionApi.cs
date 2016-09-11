@@ -23,6 +23,12 @@ namespace Sample
 	
 	[Preserve (AllMembers=true)]
 	class Settings {
+		
+		[Element(typeof(FloatEntryElement))]
+		public float Cost = 22f;
+		[Element(typeof(FloatEntryElement))]
+		public float TotalCost = 322f;
+
 	[Section]
 		public bool AccountEnabled;
 		[Skip] public bool Hidden;
