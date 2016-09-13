@@ -252,22 +252,45 @@ namespace MonoTouch.Dialog
 					else if (attr is ElementAttribute)
 					{
 						skip = true;
-						caption = caption ?? MakeCaption(mi.Name);
-						List<object> parameters = new List<object>();
-						parameters.Insert(0, caption);
-						parameters.Insert(1, GetValue(mi, o));
 						object[] customParams = ((ElementAttribute)attr).Parameters;
-						if (customParams != null)
+						caption = caption ?? MakeCaption(mi.Name);
+
+						if (mType.IsArray)
 						{
-							parameters.AddRange(customParams);
-						}
-						element = (Element) Activator.CreateInstance(((ElementAttribute)attr).CustomType, parameters.ToArray());
-						if (element != null)
-						{
-							if (section == null)
-								section = new Section();
-							section.Add(element);
+							int counter = 1;
+							var subsection = new Section(caption);
+							foreach (var v in (IEnumerable) GetValue(mi, o))
+							{
+								List<object> parameters = new List<object>() { counter.ToString(), v };
+								if (customParams != null)
+								{
+									parameters.AddRange(customParams);
+								}
+								element = (Element)Activator.CreateInstance(((ElementAttribute)attr).CustomType, parameters.ToArray());
+								if (element != null)
+								{
+									subsection.Add(element);
+								}
+								counter++;
+							}
 							mappings[element] = new MemberAndInstance(mi, o);
+							root.Add(subsection);
+						}
+						else
+						{
+							List<object> parameters = new List<object>() {caption,  GetValue(mi, o) };
+							if (customParams != null)
+							{
+								parameters.AddRange(customParams);
+							}
+							element = (Element)Activator.CreateInstance(((ElementAttribute)attr).CustomType, parameters.ToArray());
+							if (element != null)
+							{
+								if (section == null)
+									section = new Section();
+								section.Add(element);
+								mappings[element] = new MemberAndInstance(mi, o);
+							}
 						}
 					}
 				}

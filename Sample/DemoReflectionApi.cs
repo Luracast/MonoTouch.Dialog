@@ -28,6 +28,8 @@ namespace Sample
 		public float Cost = 22f;
 		[Element(typeof(FloatEntryElement),"Money goes here")]
 		public float TotalCost = 322f;
+		[Element(typeof(FloatEntryElement))]
+		public float[] Prices = new float[]{343f,34212f};
 
 	[Section]
 		public bool AccountEnabled;
