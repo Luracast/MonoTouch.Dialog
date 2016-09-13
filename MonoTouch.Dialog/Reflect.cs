@@ -140,6 +140,11 @@ namespace MonoTouch.Dialog
 		public bool ShowCaption;
 	}
 
+	public interface IProvideValue<T>
+	{
+		T Value { get; set;}
+	}
+
 	public class BindingContext : IDisposable {
 		public RootElement Root;
 		Dictionary<Element,MemberAndInstance> mappings;
@@ -258,7 +263,7 @@ namespace MonoTouch.Dialog
 						if (mType.IsArray)
 						{
 							int counter = 1;
-							var subsection = new Section(caption);
+							var subsection = new InnerSection(caption);
 							foreach (var v in (IEnumerable) GetValue(mi, o))
 							{
 								List<object> parameters = new List<object>() { counter.ToString(), v };

@@ -24,7 +24,7 @@ namespace Sample
 	[Preserve (AllMembers=true)]
 	class Settings {
 		
-		[Element(typeof(FloatEntryElement))]
+		[Element(typeof(TypeEntryElement<float>))]
 		public float Cost = 22f;
 		[Element(typeof(FloatEntryElement),"Money goes here")]
 		public float TotalCost = 322f;

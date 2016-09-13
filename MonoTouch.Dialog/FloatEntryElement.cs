@@ -537,4 +537,31 @@ namespace MonoTouch.Dialog
 				entry.ResignFirstResponder();
 		}
 	}
+
+
+
+	public class GenericEntryElement<T> : Element, IProvideValue<T>
+		where T : struct
+	{
+		public T Value
+		{
+			get; 
+			set;
+
+		}
+
+		public GenericEntryElement(string caption, T value) : base(caption)
+		{
+			Value = value;
+
+		}
+		public GenericEntryElement(string caption, T value, string placeholder) : this(caption, value)
+		{
+		}
+
+		public override string Summary()
+		{
+			return Value.ToString();
+		}
+	}
 }

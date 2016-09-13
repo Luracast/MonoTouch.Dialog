@@ -2696,6 +2696,17 @@ namespace MonoTouch.Dialog
 			return cell;
 		}
 	}
+
+	public class InnerSection : Section
+	{
+		public InnerSection(string caption) : base(caption) { }
+
+		public InnerSection(string caption, string footer) : base(caption, footer) { }
+
+		public InnerSection(UIView header) : base(header) { }
+
+		public InnerSection(UIView header, UIView footer) : base(header, footer) { }
+	}
 	
 	/// <summary>
 	/// Used by root elements to fetch information when they need to
