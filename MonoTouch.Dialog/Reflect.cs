@@ -274,6 +274,11 @@ namespace MonoTouch.Dialog
 								counter++;
 							}
 							mappings[element] = new MemberAndInstance(mi, o);
+							if (section != null)
+							{
+								root.Add(section);
+								section = null;
+							}
 							root.Add(subsection);
 						}
 						else
