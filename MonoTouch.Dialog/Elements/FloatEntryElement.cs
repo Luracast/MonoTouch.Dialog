@@ -540,28 +540,83 @@ namespace MonoTouch.Dialog
 
 
 
-	public class GenericEntryElement<T> : Element, IProvideValue<T>
+	public class GenericElement<T> : Element
 		where T : struct
 	{
+		public readonly NSString CellIdentifier;
+
 		public T Value
 		{
-			get; 
+			get;
 			set;
 
 		}
 
-		public GenericEntryElement(string caption, T value) : base(caption)
+		public string ValueString
 		{
-			Value = value;
+			get
+			{
+				return String.IsNullOrEmpty(Format)
+							? Value.ToString()
+							: String.Format(Format, Value);
+			}
 
 		}
-		public GenericEntryElement(string caption, T value, string placeholder) : this(caption, value)
+
+		public string Format = null;
+
+		public event NSAction Tapped;
+
+		public UITextAlignment Alignment = UITextAlignment.Left;
+
+
+		public GenericElement(string caption, T value) : base(caption)
 		{
+			Value = value;
+			CellIdentifier = new NSString(this.GetType().Name + value.GetType().Name);
+
+
 		}
+		public GenericElement(string caption, T value, string format) : this(caption, value) 
+		{
+			Format = format;
+		}
+
 
 		public override string Summary()
 		{
-			return Value.ToString();
+			return String.Format(Format, Value);
+		}
+
+		public override UITableViewCell GetCell(UITableView tv)
+		{
+			var cell = tv.DequeueReusableCell(CellIdentifier);
+			if (cell == null)
+			{
+				cell = new UITableViewCell(UITableViewCellStyle.Value1, CellIdentifier);
+				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Default : UITableViewCellSelectionStyle.None;
+			}
+			cell.Accessory = UITableViewCellAccessory.None;
+			cell.TextLabel.Text = Caption;
+			cell.TextLabel.TextAlignment = Alignment;
+
+			// The check is needed because the cell might have been recycled.
+			if (cell.DetailTextLabel != null)
+				cell.DetailTextLabel.Text = ValueString;
+
+			return cell;
+		}
+
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
+		{
+			if (Tapped != null)
+				Tapped();
+			tableView.DeselectRow(indexPath, true);
+		}
+
+		public override bool Matches(string text)
+		{
+			return ValueString.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1;
 		}
 	}
 }

@@ -24,11 +24,11 @@ namespace Sample
 	[Preserve (AllMembers=true)]
 	class Settings {
 		
-		[Element(typeof(TypeEntryElement<float>))]
+		[Element(typeof(GenericElement<float>))]
 		public float Cost = 22f;
-		[Element(typeof(FloatEntryElement),"Money goes here")]
+		[Element(typeof(GenericElement<float>),"{0:C} SGD")]
 		public float TotalCost = 322f;
-		[Element(typeof(FloatEntryElement))]
+		[Element(typeof(GenericElement<float>), "{0:C} SGD")]
 		public float[] Prices = new float[]{343f,34212f};
 
 	[Section]
