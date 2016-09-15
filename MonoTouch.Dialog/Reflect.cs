@@ -140,11 +140,6 @@ namespace MonoTouch.Dialog
 		public bool ShowCaption;
 	}
 
-	public interface IProvideValue<T>
-	{
-		T Value { get; set;}
-	}
-
 	public class BindingContext : IDisposable {
 		public RootElement Root;
 		Dictionary<Element,MemberAndInstance> mappings;
@@ -259,11 +254,15 @@ namespace MonoTouch.Dialog
 						skip = true;
 						object[] customParams = ((ElementAttribute)attr).Parameters;
 						caption = caption ?? MakeCaption(mi.Name);
+						Type ct = ((ElementAttribute)attr).CustomType;
 
 						if (mType.IsArray)
 						{
 							int counter = 1;
-							var subsection = new InnerSection(caption);
+
+							Type ist = typeof(InnerSection<>).MakeGenericType(ct);
+
+							var subsection = (Section) Activator.CreateInstance(ist, caption);
 							foreach (var v in (IEnumerable) GetValue(mi, o))
 							{
 								List<object> parameters = new List<object>() { counter.ToString(), v };
@@ -271,7 +270,7 @@ namespace MonoTouch.Dialog
 								{
 									parameters.AddRange(customParams);
 								}
-								element = (Element)Activator.CreateInstance(((ElementAttribute)attr).CustomType, parameters.ToArray());
+								element = (Element)Activator.CreateInstance(ct, parameters.ToArray());
 								if (element != null)
 								{
 									subsection.Add(element);
@@ -293,7 +292,7 @@ namespace MonoTouch.Dialog
 							{
 								parameters.AddRange(customParams);
 							}
-							element = (Element)Activator.CreateInstance(((ElementAttribute)attr).CustomType, parameters.ToArray());
+							element = (Element)Activator.CreateInstance(ct, parameters.ToArray());
 							if (element != null)
 							{
 								if (section == null)

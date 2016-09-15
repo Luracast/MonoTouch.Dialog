@@ -538,6 +538,45 @@ namespace MonoTouch.Dialog
 		}
 	}
 
+	public interface IProvideValue<T>
+	{
+		T Value { get; set; }
+	}
+
+	public class InnerSection<T> : Section, IProvideValue<T[]>
+	{
+		public T[] Value
+		{
+			get
+			{
+				var arr = new T[Elements.Count];
+				var i = 0;
+				foreach (var e in Elements)
+				{
+					if (e is IProvideValue<T>)
+					{
+						var p = e as IProvideValue<T>;
+						arr[i] = p.Value;
+					}
+				}
+				return arr;
+			}
+
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public InnerSection(string caption) : base(caption) { }
+
+		public InnerSection(string caption, string footer) : base(caption, footer) { }
+
+		public InnerSection(UIView header) : base(header) { }
+
+		public InnerSection(UIView header, UIView footer) : base(header, footer) { }
+
+	}
 
 
 	public class GenericElement<T> : Element
