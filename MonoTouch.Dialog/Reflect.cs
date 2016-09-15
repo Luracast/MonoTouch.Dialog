@@ -254,15 +254,15 @@ namespace MonoTouch.Dialog
 						skip = true;
 						object[] customParams = ((ElementAttribute)attr).Parameters;
 						caption = caption ?? MakeCaption(mi.Name);
-						Type ct = ((ElementAttribute)attr).CustomType;
+						Type CustomType = ((ElementAttribute)attr).CustomType;
 
 						if (mType.IsArray)
 						{
 							int counter = 1;
 
-							Type ist = typeof(InnerSection<>).MakeGenericType(ct);
-
+							Type ist = typeof(InnerSection<>).MakeGenericType(mType.GetElementType());
 							var subsection = (Section) Activator.CreateInstance(ist, caption);
+
 							foreach (var v in (IEnumerable) GetValue(mi, o))
 							{
 								List<object> parameters = new List<object>() { counter.ToString(), v };
@@ -270,7 +270,7 @@ namespace MonoTouch.Dialog
 								{
 									parameters.AddRange(customParams);
 								}
-								element = (Element)Activator.CreateInstance(ct, parameters.ToArray());
+								element = (Element)Activator.CreateInstance(CustomType, parameters.ToArray());
 								if (element != null)
 								{
 									subsection.Add(element);
@@ -292,7 +292,7 @@ namespace MonoTouch.Dialog
 							{
 								parameters.AddRange(customParams);
 							}
-							element = (Element)Activator.CreateInstance(ct, parameters.ToArray());
+							element = (Element)Activator.CreateInstance(CustomType, parameters.ToArray());
 							if (element != null)
 							{
 								if (section == null)
