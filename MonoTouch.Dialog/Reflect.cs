@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Drawing;
+using System.Linq;
 
 #if __UNIFIED__
 using UIKit;
@@ -277,7 +278,7 @@ namespace MonoTouch.Dialog
 								}
 								counter++;
 							}
-							mappings[element] = new MemberAndInstance(mi, o);
+							mappings[subsection] = new MemberAndInstance(mi, o);
 							if (section != null)
 							{
 								root.Add(section);
@@ -498,7 +499,6 @@ namespace MonoTouch.Dialog
 				Element element = dk.Key;
 				MemberInfo mi = dk.Value.Member;
 				object obj = dk.Value.Obj;
-				
 				if (element is DateTimeElement)
 					SetValue (mi, obj, ((DateTimeElement) element).DateValue);
 				else if (element is FloatElement)
@@ -511,7 +511,8 @@ namespace MonoTouch.Dialog
 					var entry = (EntryElement) element;
 					entry.FetchValue ();
 					SetValue (mi, obj, entry.Value);
-				} else if (element is ImageElement)
+				} 
+				else if (element is ImageElement)
 					SetValue (mi, obj, ((ImageElement) element).Value);
 				else if (element is RootElement){
 					var re = element as RootElement;
@@ -524,6 +525,10 @@ namespace MonoTouch.Dialog
 						
 						SetValue (mi, obj, fi.GetValue (null));
 					}
+				} 
+				else if (element.GetType().GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IProvideValue<>)))
+				{
+					SetValue(mi, obj, element.GetType().GetProperty("Value").GetValue(element, null));
 				}
 			}
 		}
