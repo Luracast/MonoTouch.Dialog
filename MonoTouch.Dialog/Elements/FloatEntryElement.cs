@@ -551,6 +551,7 @@ namespace MonoTouch.Dialog
 			{
 				var arr = new T[Elements.Count];
 				var i = 0;
+				Console.WriteLine(this.Count);
 				foreach (var e in Elements)
 				{
 					if (e is IProvideValue<T>)
@@ -558,6 +559,7 @@ namespace MonoTouch.Dialog
 						var p = e as IProvideValue<T>;
 						arr[i] = p.Value;
 					}
+					i++;
 				}
 				return arr;
 			}
@@ -579,7 +581,7 @@ namespace MonoTouch.Dialog
 	}
 
 
-	public class GenericElement<T> : Element
+	public class GenericElement<T> : Element, IProvideValue<T>
 		where T : struct
 	{
 		public readonly NSString CellIdentifier;
@@ -611,10 +613,16 @@ namespace MonoTouch.Dialog
 
 		public GenericElement(string caption, T value) : base(caption)
 		{
+			/* increment 1 for testing purpose
+			if (value is float)
+			{
+				float i = (float)(object)value;
+				i++;
+				value = (T)(object)i;
+			}
+			*/
 			Value = value;
 			CellIdentifier = new NSString(this.GetType().Name + value.GetType().Name);
-
-
 		}
 		public GenericElement(string caption, T value, string format) : this(caption, value) 
 		{
