@@ -570,7 +570,15 @@ namespace MonoTouch.Dialog
 			}
 		}
 
-		public InnerSection(string caption) : base(caption) { }
+		public InnerSection(string caption) : base(caption) 
+		{
+			FooterView = new UIView();
+			var button = UIButton.FromType(UIButtonType.ContactAdd);
+			button.TouchUpInside += delegate {
+				Add(new GenericElement<float>((Count + 1).ToString(), 22f));
+			};
+			FooterView.Add(button);
+		}
 
 		public InnerSection(string caption, string footer) : base(caption, footer) { }
 
