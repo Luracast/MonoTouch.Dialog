@@ -577,6 +577,8 @@ namespace MonoTouch.Dialog
 			button.TouchUpInside += delegate {
 				Add(new GenericElement<float>((Count + 1).ToString(), 22f));
 			};
+			//button.SetTitle(" Add", UIControlState.Normal);
+			button.Frame = new CGRect(12, 4, 20, 20);
 			FooterView.Add(button);
 		}
 
