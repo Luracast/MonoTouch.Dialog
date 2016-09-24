@@ -56,7 +56,7 @@ namespace MonoTouch.Dialog
 
 	public interface IUpdate<T>
 	{
-		void Update(T value); 
+		void Update(string caption, T value);
 	}
 
 	public class CustomCellElement<T> : Element, IProvideValue<T>, IElementSizing
@@ -81,7 +81,7 @@ namespace MonoTouch.Dialog
 
 		}
 
-		public NSString CellIdentifier;
+		private NSString cellIdentifier;
 
 		public string Format = null;
 
@@ -90,11 +90,12 @@ namespace MonoTouch.Dialog
 		public UITextAlignment Alignment = UITextAlignment.Left;
 
 
-		public CustomCellElement(string caption, T value) : base(caption)
+		public CustomCellElement(NSString cellIdentifier, string caption, T value) : base(caption)
 		{
+			this.cellIdentifier = cellIdentifier;
 			Value = value;
 		}
-		public CustomCellElement(string caption, T value, string format) : this(caption, value)
+		public CustomCellElement(NSString cellIdentifier, string caption, T value, string format) : this(cellIdentifier, caption, value)
 		{
 			Format = format;
 		}
@@ -107,16 +108,16 @@ namespace MonoTouch.Dialog
 
 		public override UITableViewCell GetCell(UITableView tv)
 		{
-			UITableViewCell cell = (UITableViewCell)tv.DequeueReusableCell(CellIdentifier);
+			UITableViewCell cell = (UITableViewCell)tv.DequeueReusableCell(cellIdentifier);
 			if (cell == null)
 			{
-				var arr = NSBundle.MainBundle.LoadNib(CellIdentifier, null, null);
+				var arr = NSBundle.MainBundle.LoadNib(cellIdentifier, null, null);
 				cell = Runtime.GetNSObject<UITableViewCell>(arr.ValueAt(0));
 				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Default : UITableViewCellSelectionStyle.None;
 			}
 
 			if (cell is IUpdate<T>)
-				(cell as IUpdate<T>).Update(Value);
+				(cell as IUpdate<T>).Update(Caption, Value);
 
 			return cell;
 		}
@@ -349,6 +350,61 @@ namespace MonoTouch.Dialog
 						var sa = attr as SectionAttribute;
 						section = new Section(sa.Caption, sa.Footer);
 					}
+					else if (attr is CellAttribute)
+					{
+						skip = true;
+						object[] customParams = ((CellAttribute)attr).Parameters;
+						caption = caption ?? MakeCaption(mi.Name);
+						var cellIdentier = new NSString(((CellAttribute)attr).Identifier);
+
+						if (mType.IsArray)
+						{
+							Type CustomType = typeof(CustomCellElement<>).MakeGenericType(mType.GetElementType());
+							int counter = 1;
+
+							Type ist = typeof(InnerSection<>).MakeGenericType(mType.GetElementType());
+							var subsection = (Section)Activator.CreateInstance(ist, caption);
+
+							foreach (var v in (IEnumerable)GetValue(mi, o))
+							{
+								List<object> parameters = new List<object>() {cellIdentier, counter.ToString(), v };
+								if (customParams != null)
+								{
+									parameters.AddRange(customParams);
+								}
+								element = (Element)Activator.CreateInstance(CustomType, parameters.ToArray());
+								if (element != null)
+								{
+									subsection.Add(element);
+								}
+								counter++;
+							}
+							mappings[subsection] = new MemberAndInstance(mi, o);
+							if (section != null)
+							{
+								root.Add(section);
+								section = null;
+							}
+							root.Add(subsection);
+						}
+						else
+						{
+							Type CustomType = typeof(CustomCellElement<>).MakeGenericType(mType);
+							var parameters = new List<object>() { cellIdentier, caption, GetValue(mi, o) };
+							if (customParams != null)
+							{
+								parameters.AddRange(customParams);
+							}
+							element = (Element)Activator.CreateInstance(CustomType, parameters.ToArray());
+							if (element != null)
+							{
+								if (section == null)
+									section = new Section();
+								section.Add(element);
+								mappings[element] = new MemberAndInstance(mi, o);
+							}
+						}
+					}
 					else if (attr is ElementAttribute)
 					{
 						skip = true;
@@ -387,7 +443,7 @@ namespace MonoTouch.Dialog
 						}
 						else
 						{
-							List<object> parameters = new List<object>() {caption,  GetValue(mi, o) };
+							var parameters = new List<object>() {caption,  GetValue(mi, o) };
 							if (customParams != null)
 							{
 								parameters.AddRange(customParams);
