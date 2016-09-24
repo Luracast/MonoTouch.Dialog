@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Text;
 using System.Drawing;
 using System.Linq;
+using ObjCRuntime;
 
 #if __UNIFIED__
 using UIKit;
@@ -39,6 +40,104 @@ namespace MonoTouch.Dialog
 		}
 		public Type CustomType;
 		public object[] Parameters;
+	}
+
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
+	public class CellAttribute : Attribute
+	{
+		public CellAttribute(string identifier, params object[] parameters)
+		{
+			Identifier = new NSString(identifier);
+			Parameters = parameters;
+		}
+		public NSString Identifier;
+		public object[] Parameters;
+	}
+
+	public interface IUpdate<T>
+	{
+		void Update(T value); 
+	}
+
+	public class CustomCellElement<T> : Element, IProvideValue<T>, IElementSizing
+		where T : struct
+	{
+
+		public T Value
+		{
+			get;
+			set;
+
+		}
+
+		public string ValueString
+		{
+			get
+			{
+				return String.IsNullOrEmpty(Format)
+							? Value.ToString()
+							: String.Format(Format, Value);
+			}
+
+		}
+
+		public NSString CellIdentifier;
+
+		public string Format = null;
+
+		public event NSAction Tapped;
+
+		public UITextAlignment Alignment = UITextAlignment.Left;
+
+
+		public CustomCellElement(string caption, T value) : base(caption)
+		{
+			Value = value;
+		}
+		public CustomCellElement(string caption, T value, string format) : this(caption, value)
+		{
+			Format = format;
+		}
+
+
+		public override string Summary()
+		{
+			return String.Format(Format, Value);
+		}
+
+		public override UITableViewCell GetCell(UITableView tv)
+		{
+			UITableViewCell cell = (UITableViewCell)tv.DequeueReusableCell(CellIdentifier);
+			if (cell == null)
+			{
+				var arr = NSBundle.MainBundle.LoadNib(CellIdentifier, null, null);
+				cell = Runtime.GetNSObject<UITableViewCell>(arr.ValueAt(0));
+				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Default : UITableViewCellSelectionStyle.None;
+			}
+
+			if (cell is IUpdate<T>)
+				(cell as IUpdate<T>).Update(Value);
+
+			return cell;
+		}
+
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
+		{
+			if (Tapped != null)
+				Tapped();
+			tableView.DeselectRow(indexPath, true);
+		}
+
+		public override bool Matches(string text)
+		{
+			return ValueString.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1;
+		}
+
+		public nfloat GetHeight(UITableView tableView, NSIndexPath indexPath)
+		{
+			//var cell = tableView.CellAt(indexPath);
+			return 60;
+		}
 	}
 
 	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
