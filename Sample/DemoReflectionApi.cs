@@ -8,9 +8,11 @@
 using System;
 using System.Collections.Generic;
 using MonoTouch.Dialog;
+using ObjCRuntime;
 #if __UNIFIED__
 using UIKit;
 using Foundation;
+using NSAction = global::System.Action;
 #else
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
@@ -24,11 +26,11 @@ namespace Sample
 	[Preserve (AllMembers=true)]
 	class Settings {
 		
-		[Element(typeof(GenericElement<float>))]
+		[Cell("CustomCell")]
 		public float Cost = 22f;
-		[Element(typeof(GenericElement<float>),"{0:C} SGD")]
+		[Element(typeof(CustomElement<float>),"{0:C} SGD")]
 		public float TotalCost = 322f;
-		[Element(typeof(GenericElement<float>), "{0:C} SGD")]
+		[Cell("CustomCell")]
 		public float[] Prices = new float[]{343f,34212f};
 
 	[Section]
@@ -141,6 +143,84 @@ namespace Sample
 				    settings.selected);
 			};
 			navigation.PushViewController (dv, true);	
+		}
+	}
+
+	public class CustomElement<T> : Element, IProvideValue<T>, IElementSizing
+		where T : struct
+	{
+
+		public T Value
+		{
+			get;
+			set;
+
+		}
+
+		public string ValueString
+		{
+			get
+			{
+				return String.IsNullOrEmpty(Format)
+							? Value.ToString()
+							: String.Format(Format, Value);
+			}
+
+		}
+
+		public string Format = null;
+
+		public event NSAction Tapped;
+
+		public UITextAlignment Alignment = UITextAlignment.Left;
+
+
+		public CustomElement(string caption, T value) : base(caption)
+		{
+			Value = value;
+		}
+		public CustomElement(string caption, T value, string format) : this(caption, value)
+		{
+			Format = format;
+		}
+
+
+		public override string Summary()
+		{
+			return String.Format(Format, Value);
+		}
+
+		public override UITableViewCell GetCell(UITableView tv)
+		{
+			CustomCell cell = (CustomCell) tv.DequeueReusableCell(CustomCell.Key);
+			if (cell == null)
+			{
+				var arr = NSBundle.MainBundle.LoadNib(CustomCell.Key, null, null);
+				cell = Runtime.GetNSObject<CustomCell>(arr.ValueAt(0));
+				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Default : UITableViewCellSelectionStyle.None;
+			}
+
+			cell.Update(Caption, ValueString);
+
+			return cell;
+		}
+
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
+		{
+			if (Tapped != null)
+				Tapped();
+			tableView.DeselectRow(indexPath, true);
+		}
+
+		public override bool Matches(string text)
+		{
+			return ValueString.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1;
+		}
+
+		public nfloat GetHeight(UITableView tableView, NSIndexPath indexPath)
+		{
+			//var cell = tableView.CellAt(indexPath);
+			return 60;
 		}
 	}
 }
