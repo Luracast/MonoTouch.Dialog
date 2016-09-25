@@ -676,4 +676,50 @@ namespace MonoTouch.Dialog
 			return ValueString.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1;
 		}
 	}
+
+	public class TableSource : DialogViewController.Source
+	{
+		#region Constructors
+		public TableSource(DialogViewController dvc) : base(dvc) { }
+
+		#endregion
+
+		#region Override Methods
+		/*
+		public override UITableViewRowAction[] EditActionsForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			Console.WriteLine(indexPath.Section);
+
+			UITableViewRowAction hiButton = UITableViewRowAction.Create(
+			UITableViewRowActionStyle.Normal,
+			"Edit",
+			delegate
+			{
+				Console.WriteLine("Edit World!");
+			});
+			UITableViewRowAction niButton = UITableViewRowAction.Create(
+				UITableViewRowActionStyle.Destructive,
+				"Delete",
+				delegate
+				{
+					Console.WriteLine("Delete World!");
+				});
+			return new UITableViewRowAction[] { hiButton, niButton };
+		}
+		*/
+
+		public override bool CanEditRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			//var s = Container.Root.Sections[(int)indexPath.Section];
+			//return s is InnerSection<>;
+			return indexPath.Section == 1;
+		}
+
+		public override void CommitEditingStyle(UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
+		{
+			var s = Container.Root.Sections[(int)indexPath.Section];
+			s.Remove(indexPath.Row);
+		}
+		#endregion
+	}
 }
