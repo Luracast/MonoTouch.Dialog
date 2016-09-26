@@ -16,16 +16,17 @@ using System.Reflection;
 using System.Text;
 using System.Drawing;
 using System.Linq;
-using ObjCRuntime;
 
 #if __UNIFIED__
 using UIKit;
 using Foundation;
+using ObjCRuntime;
 
 using NSAction = global::System.Action;
 #else
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
+using MonoTouch.ObjCRuntime;
 #endif
 
 namespace MonoTouch.Dialog
@@ -56,13 +57,29 @@ namespace MonoTouch.Dialog
 
 	public interface IUpdate<T>
 	{
-		void Update(string caption, T value);
+		void Update(string caption, T value, CustomCellElement<T> element);
 	}
 
 	public class CustomCellElement<T> : Element, IProvideValue<T>, IElementSizing
-		where T : struct
 	{
-
+		float height = 40;
+		float expandedHeight = 40;
+		public float Height 
+		{ 
+			get { return height; }
+			set {
+				if (value > height)
+					height = value;
+			}
+		}
+		public float ExpandedHeight 
+		{ 
+			get{ return expandedHeight; }
+			set{
+				if (value > height)
+					expandedHeight = value;
+			} 
+		}
 		public T Value
 		{
 			get;
@@ -93,6 +110,7 @@ namespace MonoTouch.Dialog
 		public CustomCellElement(NSString cellIdentifier, string caption, T value) : base(caption)
 		{
 			this.cellIdentifier = cellIdentifier;
+
 			Value = value;
 		}
 		public CustomCellElement(NSString cellIdentifier, string caption, T value, string format) : this(cellIdentifier, caption, value)
@@ -117,7 +135,7 @@ namespace MonoTouch.Dialog
 			}
 
 			if (cell is IUpdate<T>)
-				(cell as IUpdate<T>).Update(Caption, Value);
+				(cell as IUpdate<T>).Update(Caption, Value, this);
 
 			return cell;
 		}
@@ -137,7 +155,7 @@ namespace MonoTouch.Dialog
 		public nfloat GetHeight(UITableView tableView, NSIndexPath indexPath)
 		{
 			//var cell = tableView.CellAt(indexPath);
-			return 60;
+			return Height;
 		}
 	}
 
@@ -157,14 +175,14 @@ namespace MonoTouch.Dialog
 		public UITextFieldViewMode ClearButtonMode;
 	}
 
-	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
 	public class DateAttribute : Attribute { }
-	
-	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
+
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
 	public class TimeAttribute : Attribute { }
-	
-	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
-	public class CheckboxAttribute : Attribute {}
+
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
+	public class CheckboxAttribute : Attribute { }
 
 	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
 	public class MultilineAttribute : Attribute {}

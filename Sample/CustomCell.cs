@@ -34,12 +34,14 @@ namespace Sample
 			Date.Text = date == null ? "" : date.Value.ToString("d");
 		}
 
-		public void Update(string caption, float value)
+		public void Update(string caption, float value, CustomCellElement<float> element)
 		{
 			Title.Text = "";
 			SubTitle.Text = value.ToString("C")+ " SGD";
 			ID.Text = caption;
 			Date.Text = "";
+			element.Height = 60;
+			element.ExpandedHeight = 60;
 		}
 	}
 }
