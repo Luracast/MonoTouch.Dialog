@@ -573,12 +573,16 @@ namespace MonoTouch.Dialog
 		public InnerSection(string caption) : base(caption) 
 		{
 			FooterView = new UIView();
-			var button = UIButton.FromType(UIButtonType.ContactAdd);
+			FooterView.Bounds = new CGRect(0, 0, 320, 60);
+			var button = UIButton.FromType(UIButtonType.RoundedRect);
+			button.TintColor = UIColor.White;
+			button.Layer.CornerRadius = (nfloat).3;
+			button.BackgroundColor = UIColor.Green;
 			button.TouchUpInside += delegate {
 				Add(new GenericElement<float>((Count + 1).ToString(), 22f));
 			};
-			//button.SetTitle(" Add", UIControlState.Normal);
-			button.Frame = new CGRect(12, 4, 20, 20);
+			button.SetTitle("Add", UIControlState.Normal);
+			button.Frame = new CGRect(12, 4, 100, 35);
 			FooterView.Add(button);
 		}
 
