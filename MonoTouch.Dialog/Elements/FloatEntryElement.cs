@@ -681,7 +681,7 @@ namespace MonoTouch.Dialog
 		}
 	}
 
-	public class TableSource : DialogViewController.Source
+	public class TableSource : DialogViewController.SizingSource
 	{
 		#region Constructors
 		public TableSource(DialogViewController dvc) : base(dvc) { }
