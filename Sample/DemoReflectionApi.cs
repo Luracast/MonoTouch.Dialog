@@ -98,21 +98,30 @@ namespace Sample
 			UIApplication.SharedApplication.InvokeOnMainThread(
 				new NSAction(() =>
 				{
-					UIAlertView alert = new UIAlertView(
-						"Add the new price",
-						"",
-						null,
-						"Cancel",
-						"OK"
-					);
-					alert.Clicked += (sender, buttonArgs) =>
+					var alert = UIAlertController.Create("Alarm", "Wake up sleeping giant!", UIAlertControllerStyle.Alert);
+
+					alert.AddTextField(textField =>
 					{
-						if (buttonArgs.ButtonIndex != alert.CancelButtonIndex)
-							tcs.SetResult(28372f);
-						else
-							tcs.SetCanceled();
-					};
-					alert.Show();
+						textField.Placeholder = "Price";
+						textField.KeyboardType = UIKeyboardType.DecimalPad;
+					});
+					alert.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, action => tcs.SetCanceled()));
+					alert.AddAction(UIAlertAction.Create("Add Price", UIAlertActionStyle.Default, action =>
+					{
+						float value;
+						float.TryParse(alert.TextFields[0].Text, out value);
+						tcs.SetResult(value);
+					}));
+
+					var window = UIApplication.SharedApplication.KeyWindow;
+					var hostVC = window.RootViewController;
+					UIViewController next;
+
+					while ((next = hostVC.PresentedViewController) != null)
+					{
+						hostVC = next;
+					}
+					hostVC.PresentViewController(alert, animated: true, completionHandler: null);
 				})
 			);
 
