@@ -98,7 +98,7 @@ namespace Sample
 			UIApplication.SharedApplication.InvokeOnMainThread(
 				new NSAction(() =>
 				{
-					var alert = UIAlertController.Create("Alarm", "Wake up sleeping giant!", UIAlertControllerStyle.Alert);
+					var alert = UIAlertController.Create("Price", "Add to price list", UIAlertControllerStyle.Alert);
 
 					alert.AddTextField(textField =>
 					{
