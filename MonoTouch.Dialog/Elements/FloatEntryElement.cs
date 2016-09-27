@@ -8,6 +8,7 @@ using MonoTouch.Dialog;
 using System.Globalization;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 
 #if __UNIFIED__
 using UIKit;
@@ -570,6 +571,26 @@ namespace MonoTouch.Dialog
 			}
 		}
 
+		public InnerSection(string caption, MethodInfo addMethod) : base(caption)
+		{
+			var view = new UITableViewHeaderFooterView();
+			view.TextLabel.Text = caption;
+			var addButton = new UIButton(UIButtonType.ContactAdd) { TranslatesAutoresizingMaskIntoConstraints = false };
+			addButton.SizeToFit();
+			addButton.TouchUpInside += delegate
+					   {
+						   addMethod.Invoke(null, new object[] { this });
+					   };
+			view.AddSubviews(addButton);
+			var top = 0f;
+			var gap = 16f;
+			var t = NSLayoutConstraint.Create(addButton, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.Top, 1.0f, top);
+			var r = NSLayoutConstraint.Create(addButton, NSLayoutAttribute.Trailing, NSLayoutRelation.Equal, view, NSLayoutAttribute.Trailing, 1.0f, -gap);
+			view.AddConstraints(new NSLayoutConstraint[] { t, r });
+
+			HeaderView = view;
+		}
+
 		public InnerSection(string caption) : base(caption) 
 		{
 			/*
@@ -611,19 +632,6 @@ namespace MonoTouch.Dialog
 
 			view.AddConstraints(new NSLayoutConstraint[] { c1, c2, c3, c4 });
 			*/
-
-			var view = new UITableViewHeaderFooterView();
-			view.TextLabel.Text = caption;
-			var v2 = new UIButton(UIButtonType.ContactAdd) { TranslatesAutoresizingMaskIntoConstraints = false };
-			v2.SizeToFit();
-			view.AddSubviews(v2);
-			var top = 0f;
-			var gap = 16f;
-			var c3 = NSLayoutConstraint.Create(v2, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.Top, 1.0f, top);
-			var c4 = NSLayoutConstraint.Create(v2, NSLayoutAttribute.Trailing, NSLayoutRelation.Equal, view, NSLayoutAttribute.Trailing, 1.0f, -gap);
-			view.AddConstraints(new NSLayoutConstraint[] { c3, c4 });
-
-			HeaderView = view;
 
 		}
 

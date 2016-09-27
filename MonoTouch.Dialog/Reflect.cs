@@ -214,6 +214,16 @@ namespace MonoTouch.Dialog
 		}
 	}
 
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
+	public class OnAddAttribute : Attribute
+	{
+		public OnAddAttribute(string method)
+		{
+			Method = method;
+		}
+		public string Method;
+	}
+
 	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
 	public class OnTapAttribute : Attribute {
 		public OnTapAttribute (string method)
@@ -356,6 +366,7 @@ namespace MonoTouch.Dialog
 				string caption = null;
 				object [] attrs = mi.GetCustomAttributes (false);
 				bool skip = false;
+				MethodInfo addMethod = null;
 				foreach (var attr in attrs){
 					if (attr is SkipAttribute || attr is System.Runtime.CompilerServices.CompilerGeneratedAttribute)
 						skip = true;
@@ -367,6 +378,21 @@ namespace MonoTouch.Dialog
 							root.Add(section);
 						var sa = attr as SectionAttribute;
 						section = new Section(sa.Caption, sa.Footer);
+					}
+					else if (attr is OnAddAttribute)
+					{
+						string mname = ((OnAddAttribute)attr).Method;
+
+						if (callbacks == null)
+						{
+							throw new Exception("Your class contains [OnAdd] attributes, but you passed a null object for `context' in the constructor");
+						}
+
+						addMethod = callbacks.GetType().GetMethod(mname);
+						if (addMethod == null)
+							throw new Exception("Did not find method " + mname);
+						if(!addMethod.IsStatic)
+							throw new Exception("method " + mname+" should be static");
 					}
 					else if (attr is CellAttribute)
 					{
@@ -381,7 +407,9 @@ namespace MonoTouch.Dialog
 							int counter = 1;
 
 							Type ist = typeof(InnerSection<>).MakeGenericType(mType.GetElementType());
-							var subsection = (Section)Activator.CreateInstance(ist, caption);
+							var subsection = addMethod == null
+								? (Section)Activator.CreateInstance(ist, caption)
+								: (Section)Activator.CreateInstance(ist, caption, addMethod);
 
 							foreach (var v in (IEnumerable)GetValue(mi, o))
 							{
@@ -422,6 +450,7 @@ namespace MonoTouch.Dialog
 								mappings[element] = new MemberAndInstance(mi, o);
 							}
 						}
+						addMethod = null;
 					}
 					else if (attr is ElementAttribute)
 					{
@@ -475,6 +504,7 @@ namespace MonoTouch.Dialog
 								mappings[element] = new MemberAndInstance(mi, o);
 							}
 						}
+						addMethod = null;
 					}
 				}
 				if (skip)

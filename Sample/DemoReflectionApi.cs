@@ -31,6 +31,8 @@ namespace Sample
 		public float Cost = 22f;
 		[Element(typeof(CustomElement<float>), "{0:C} SGD")]
 		public float TotalCost = 322f;
+
+		[OnAdd("OnAdd")]
 		[Cell("CustomCell")]
 		public float[] Prices = new float[] { 343f, 34212f };
 
@@ -82,6 +84,11 @@ namespace Sample
 		[RadioSelection("ListOfString")]
 		public int selected = 1;
 		public IList<string> ListOfString;
+
+		public static void OnAdd(InnerSection<float> section)
+		{
+			section.Add(new CustomCellElement<float>(new NSString("CustomCell"), section.Count.ToString(), 232f));
+		}
 	}
 
 	public class TimeSettings
@@ -122,7 +129,7 @@ namespace Sample
 					ListOfString = new List<string>() { "One", "Two", "Three" }
 				};
 			}
-			var bc = new BindingContext(null, settings, "Settings");
+			var bc = new BindingContext(settings, settings, "Settings");
 
 			var dv = new DialogViewController(bc.Root, true);
 
