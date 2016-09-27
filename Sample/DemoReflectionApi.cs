@@ -105,7 +105,13 @@ namespace Sample
 						"Cancel",
 						"OK"
 					);
-					alert.Clicked += (sender, buttonArgs) => tcs.SetResult(buttonArgs.ButtonIndex != alert.CancelButtonIndex ? 28372f : 0f);
+					alert.Clicked += (sender, buttonArgs) =>
+					{
+						if (buttonArgs.ButtonIndex != alert.CancelButtonIndex)
+							tcs.SetResult(28372f);
+						else
+							tcs.SetCanceled();
+					};
 					alert.Show();
 				})
 			);
