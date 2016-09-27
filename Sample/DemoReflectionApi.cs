@@ -85,9 +85,9 @@ namespace Sample
 		public int selected = 1;
 		public IList<string> ListOfString;
 
-		public static void OnAdd(InnerSection<float> section)
+		public static float OnAdd(InnerSection<float> section)
 		{
-			section.Add(new CustomCellElement<float>(new NSString("CustomCell"), section.Count.ToString(), 232f));
+			return  232f;
 		}
 	}
 

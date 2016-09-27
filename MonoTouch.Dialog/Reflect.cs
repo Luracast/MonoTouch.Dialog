@@ -409,7 +409,7 @@ namespace MonoTouch.Dialog
 							Type ist = typeof(InnerSection<>).MakeGenericType(mType.GetElementType());
 							var subsection = addMethod == null
 								? (Section)Activator.CreateInstance(ist, caption)
-								: (Section)Activator.CreateInstance(ist, caption, addMethod);
+							                        : (Section)Activator.CreateInstance(ist, caption, addMethod, CustomType, new object[] {cellIdentier});
 
 							foreach (var v in (IEnumerable)GetValue(mi, o))
 							{

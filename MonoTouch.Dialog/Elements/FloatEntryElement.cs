@@ -571,16 +571,26 @@ namespace MonoTouch.Dialog
 			}
 		}
 
-		public InnerSection(string caption, MethodInfo addMethod) : base(caption)
+		public InnerSection(string caption, MethodInfo addMethod, Type elementType, object[] elementConstructorParameters) : base(caption)
 		{
 			var view = new UITableViewHeaderFooterView();
 			view.TextLabel.Text = caption;
 			var addButton = new UIButton(UIButtonType.ContactAdd) { TranslatesAutoresizingMaskIntoConstraints = false };
 			addButton.SizeToFit();
 			addButton.TouchUpInside += delegate
-					   {
-						   addMethod.Invoke(null, new object[] { this });
-					   };
+			{
+				T value = (T)addMethod.Invoke(null, new object[] { this });
+				if (value != null)
+				{
+					object[] parameters = new object[elementConstructorParameters.Length + 2];
+					elementConstructorParameters.CopyTo(parameters, 0);
+					parameters[elementConstructorParameters.Length] = (this.Count + 1).ToString();
+					parameters[elementConstructorParameters.Length + 1] = value;
+					var element = (Element)Activator.CreateInstance(elementType, parameters);
+					if (element != null)
+						Add(element);
+				}
+			};
 			view.AddSubviews(addButton);
 			var top = 0f;
 			var gap = 16f;
