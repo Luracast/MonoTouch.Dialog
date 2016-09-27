@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using MonoTouch.Dialog;
 using ObjCRuntime;
+using System.Threading.Tasks;
 #if __UNIFIED__
 using UIKit;
 using Foundation;
@@ -85,9 +86,31 @@ namespace Sample
 		public int selected = 1;
 		public IList<string> ListOfString;
 
-		public static float OnAdd(InnerSection<float> section)
+		public static Task<float> OnAdd()
 		{
-			return  232f;
+			return GetFloat();
+		}
+
+		public static Task<float> GetFloat()
+		{
+			var tcs = new TaskCompletionSource<float>();
+
+			UIApplication.SharedApplication.InvokeOnMainThread(
+				new NSAction(() =>
+				{
+					UIAlertView alert = new UIAlertView(
+						"Add the new price",
+						"",
+						null,
+						"Cancel",
+						"OK"
+					);
+					alert.Clicked += (sender, buttonArgs) => tcs.SetResult(buttonArgs.ButtonIndex != alert.CancelButtonIndex ? 28372f : 0f);
+					alert.Show();
+				})
+			);
+
+			return tcs.Task;
 		}
 	}
 

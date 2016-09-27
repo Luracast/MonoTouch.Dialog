@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 #if __UNIFIED__
 using UIKit;
@@ -579,16 +580,38 @@ namespace MonoTouch.Dialog
 			addButton.SizeToFit();
 			addButton.TouchUpInside += delegate
 			{
-				T value = (T)addMethod.Invoke(null, new object[] { this });
-				if (value != null)
+				var result = addMethod.Invoke(null, new object[0]);
+				if (result != null)
 				{
-					object[] parameters = new object[elementConstructorParameters.Length + 2];
-					elementConstructorParameters.CopyTo(parameters, 0);
-					parameters[elementConstructorParameters.Length] = (this.Count + 1).ToString();
-					parameters[elementConstructorParameters.Length + 1] = value;
-					var element = (Element)Activator.CreateInstance(elementType, parameters);
-					if (element != null)
+					if (result is Task<T>)
+					{
+						Task<T> task = (Task<T>)result;
+						task.ContinueWith((Task<T> arg) =>
+						{
+							T value = arg.Result;
+							object[] parameters = new object[elementConstructorParameters.Length + 2];
+							elementConstructorParameters.CopyTo(parameters, 0);
+							parameters[elementConstructorParameters.Length] = (this.Count + 1).ToString();
+							parameters[elementConstructorParameters.Length + 1] = value;
+							var element = (Element)Activator.CreateInstance(elementType, parameters);
+							UIApplication.SharedApplication.InvokeOnMainThread(
+								new NSAction(() =>
+								{
+									Add(element);
+								})
+							);
+						});
+					}
+					else
+					{
+						T value = (T)result;
+						object[] parameters = new object[elementConstructorParameters.Length + 2];
+						elementConstructorParameters.CopyTo(parameters, 0);
+						parameters[elementConstructorParameters.Length] = (this.Count + 1).ToString();
+						parameters[elementConstructorParameters.Length + 1] = value;
+						var element = (Element)Activator.CreateInstance(elementType, parameters);
 						Add(element);
+					}
 				}
 			};
 			view.AddSubviews(addButton);
