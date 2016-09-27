@@ -591,49 +591,7 @@ namespace MonoTouch.Dialog
 			HeaderView = view;
 		}
 
-		public InnerSection(string caption) : base(caption) 
-		{
-			/*
-			FooterView = new UIView();
-			FooterView.Frame = new CGRect(0, 0, 320, 60);
-			var button = UIButton.FromType(UIButtonType.RoundedRect);
-			button.TintColor = UIColor.White;
-			button.Layer.CornerRadius = (nfloat).3;
-			button.BackgroundColor = UIColor.Green;
-			button.TouchUpInside += delegate {
-				Add(new GenericElement<float>((Count + 1).ToString(), 22f));
-			};
-			button.SetTitle("Add", UIControlState.Normal);
-			button.Frame = new CGRect(12, 4, 100, 35);
-			FooterView.Add(button);
-			*/
-
-			/*
-			var view = new UIView();
-			var v1 = new UILabel()
-			{
-				Text = caption.ToUpper(),
-				TextColor = UIColor.FromRGB(0.298039f, 0.337255f, 0.423529f),
-				Font = UIFont.SystemFontOfSize(14), 
-				TranslatesAutoresizingMaskIntoConstraints = false 
-			};
-			v1.SizeToFit();
-			var v2 = new UIButton(UIButtonType.ContactAdd) { TranslatesAutoresizingMaskIntoConstraints = false };
-			v2.SizeToFit();
-			view.AddSubviews(v1, v2);
-
-			var top = 3f;
-			var gap = 16f;
-
-			var c1 = NSLayoutConstraint.Create(v1, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.Top, 1.0f, top);
-			var c2 = NSLayoutConstraint.Create(v1, NSLayoutAttribute.Leading, NSLayoutRelation.Equal, view, NSLayoutAttribute.Leading, 1.0f, gap);
-			var c3 = NSLayoutConstraint.Create(v2, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.Top, 1.0f, top);
-			var c4 = NSLayoutConstraint.Create(v2, NSLayoutAttribute.Trailing, NSLayoutRelation.Equal, view, NSLayoutAttribute.Trailing, 1.0f, -gap);
-
-			view.AddConstraints(new NSLayoutConstraint[] { c1, c2, c3, c4 });
-			*/
-
-		}
+		public InnerSection(string caption) : base(caption) { }
 
 		public InnerSection(string caption, string footer) : base(caption, footer) { }
 
