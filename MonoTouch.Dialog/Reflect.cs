@@ -374,7 +374,7 @@ namespace MonoTouch.Dialog
 						caption = ((CaptionAttribute)attr).Caption;
 					else if (attr is SectionAttribute)
 					{
-						if (section != null)
+						if (section != null && section.Count > 0)
 							root.Add(section);
 						var sa = attr as SectionAttribute;
 						section = new Section(sa.Caption, sa.Footer);
@@ -426,7 +426,7 @@ namespace MonoTouch.Dialog
 								counter++;
 							}
 							mappings[subsection] = new MemberAndInstance(mi, o);
-							if (section != null)
+							if (section != null && section.Count > 0)
 							{
 								root.Add(section);
 								section = null;
