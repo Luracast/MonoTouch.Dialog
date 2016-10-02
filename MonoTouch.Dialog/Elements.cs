@@ -1982,7 +1982,7 @@ namespace MonoTouch.Dialog
 		{
 			var date = (DateValue.HasValue) ? GetDateWithKind(DateValue.Value) : DateTime.Now;
 			var picker = new UIDatePicker (CGRect.Empty){
-				AutoresizingMask = UIViewAutoresizing.FlexibleWidth,
+				AutoresizingMask = UIViewAutoresizing.FlexibleMargins,
 				Mode = UIDatePickerMode.DateAndTime,
 				Date = (NSDate) date,
 				MinuteInterval = MinuteInterval
