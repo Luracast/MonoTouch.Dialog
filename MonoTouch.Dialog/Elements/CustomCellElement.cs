@@ -283,6 +283,14 @@ namespace MonoTouch.Dialog
 			public object Obj;
 		}
 
+		public object UpdatedValue(Element e)
+		{
+			var mai = mappings[e];
+			if (mai == null)
+				return null;
+			return GetValue(mai.Member, mai.Obj);
+		}
+
 		static object GetValue(MemberInfo mi, object o)
 		{
 			var fi = mi as FieldInfo;
