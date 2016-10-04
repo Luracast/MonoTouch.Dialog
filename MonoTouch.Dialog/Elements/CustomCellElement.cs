@@ -636,6 +636,26 @@ namespace MonoTouch.Dialog
 					else
 						element = new DateTimeElement(caption, dateTime);
 				}
+				else if (mType == typeof(DateTime?))
+				{
+					var dateTime = (DateTime?)GetValue(mi, o);
+					bool asDate = false, asTime = false;
+
+					foreach (object attr in attrs)
+					{
+						if (attr is DateAttribute)
+							asDate = true;
+						else if (attr is TimeAttribute)
+							asTime = true;
+					}
+
+					if (asDate)
+						element = new DateElement(caption, dateTime);
+					else if (asTime)
+						element = new TimeElement(caption, dateTime);
+					else
+						element = new DateTimeElement(caption, dateTime);
+				}
 				else if (mType.IsEnum)
 				{
 					var csection = new Section();
