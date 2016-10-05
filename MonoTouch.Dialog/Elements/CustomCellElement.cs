@@ -274,10 +274,15 @@ namespace MonoTouch.Dialog
 
 		public object UpdatedValue(Element e)
 		{
-			var mai = mappings[e];
-			if (mai == null)
+			MemberAndInstance mai;
+			if (mappings.TryGetValue(e, out mai))
+			{
+				return GetValue(mai.Member, mai.Obj);
+			}
+			else
+			{
 				return null;
-			return GetValue(mai.Member, mai.Obj);
+			}
 		}
 
 		class MemberAndInstance
