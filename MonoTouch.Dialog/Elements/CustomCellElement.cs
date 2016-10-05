@@ -272,6 +272,14 @@ namespace MonoTouch.Dialog
 		public RootElement Root;
 		Dictionary<Element, MemberAndInstance> mappings;
 
+		public object UpdatedValue(Element e)
+		{
+			var mai = mappings[e];
+			if (mai == null)
+				return null;
+			return GetValue(mai.Member, mai.Obj);
+		}
+
 		class MemberAndInstance
 		{
 			public MemberAndInstance(MemberInfo mi, object o)
@@ -281,14 +289,6 @@ namespace MonoTouch.Dialog
 			}
 			public MemberInfo Member;
 			public object Obj;
-		}
-
-		public object UpdatedValue(Element e)
-		{
-			var mai = mappings[e];
-			if (mai == null)
-				return null;
-			return GetValue(mai.Member, mai.Obj);
 		}
 
 		static object GetValue(MemberInfo mi, object o)
