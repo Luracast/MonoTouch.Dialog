@@ -89,6 +89,11 @@ namespace Sample
 	[Preserve(AllMembers = true)]
 	class Settings
 	{
+		[Cell("PaymentCell")]
+		public float[] items = new float[] { 2f, 445.5f, 343f };
+		[OnAdd("Add")]
+		[Cell("PaymentCell")]
+		public float[] items2 = new float[] { 2f, 445.5f, 343f };
 		[Section]
 		public PaymentForm Payment = new PaymentForm();
 		public OrderForm order = new OrderForm();
@@ -139,6 +144,11 @@ namespace Sample
 		[RadioSelection("ListOfString")]
 		public int selected = 1;
 		public IList<string> ListOfString;
+
+		public static float Add()
+		{
+			return 54f;
+		}
 	}
 
 	public class TimeSettings

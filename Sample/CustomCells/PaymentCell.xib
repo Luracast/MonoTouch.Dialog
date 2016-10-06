@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7026.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" customClass="PaymentCell" id="cxk-wN-pdQ" rowHeight="44" layoutMarginsFollowReadableWidth="YES">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cxk-wN-pdQ" id="YTl-1W-gDM" layoutMarginsFollowReadableWidth="YES">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="VISA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="2" translatesAutoresizingMaskIntoConstraints="NO" misplaced="YES">
+                        <rect key="frame" x="100" y="13.5" width="133" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="textColor" colorSpace="calibratedWhite" white="0.333333333333333" alpha="1"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$1,200.00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3" translatesAutoresizingMaskIntoConstraints="NO">
+                        <rect key="frame" x="226" y="14" width="80" height="16"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <nil key="highlightedColor"/>
+                        <color key="textColor" colorSpace="calibratedRGB" red="1" green="0.49803921568627452" blue="0" alpha="1"/>
+                        <constraints>
+                            <constraint id="11" firstAttribute="width" constant="80"/>
+                        </constraints>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12/12/2016" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="16" translatesAutoresizingMaskIntoConstraints="NO">
+                        <rect key="frame" x="26" y="14" width="61" height="16"/>
+                        <fontDescription key="fontDescription" name="AppleSDGothicNeo-Bold" family="Apple SD Gothic Neo" pointSize="13"/>
+                        <nil key="highlightedColor"/>
+                        <color key="textColor" colorSpace="calibratedRGB" red="0.6" green="0.4" blue="0.2" alpha="1"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint id="4" firstItem="2" firstAttribute="centerY" secondItem="YTl-1W-gDM" secondAttribute="centerY"/>
+                    <constraint id="9" firstItem="3" firstAttribute="centerY" secondItem="YTl-1W-gDM" secondAttribute="centerY"/>
+                    <constraint id="10" firstItem="YTl-1W-gDM" firstAttribute="rightMargin" secondItem="3" secondAttribute="rightMargin" constant="14"/>
+                    <constraint id="31" firstItem="16" firstAttribute="centerY" secondItem="YTl-1W-gDM" secondAttribute="centerY"/>
+                    <constraint id="32" firstItem="16" firstAttribute="leadingMargin" secondItem="YTl-1W-gDM" secondAttribute="leadingMargin" constant="14"/>
+                    <constraint id="41" firstItem="2" firstAttribute="trailing" secondItem="3" secondAttribute="leading" constant="6"/>
+                    <constraint id="44" firstItem="2" firstAttribute="leading" secondItem="16" secondAttribute="trailing" constant="20"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="Title" destination="2" id="name-outlet-2"/>
+                <outlet property="SubTitle" destination="3" id="name-outlet-3"/>
+                <outlet property="Date" destination="16" id="name-outlet-16"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="Content/logo.png" width="142" height="173"/>
+        <image name="CanaryFull.png" width="1926" height="2768"/>
+        <image name="CellBox.png" width="80" height="20"/>
+    </resources>
+</document>

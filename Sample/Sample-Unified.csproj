@@ -41,6 +41,8 @@
     <Compile Include="DemoIndex.cs" />
     <Compile Include="DemoEditingAdvanced.cs" />
     <Compile Include="DemoInsets.cs" />
+    <Compile Include="CustomCells\PaymentCell.cs" />
+    <Compile Include="CustomCells\PaymentCell.designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="monodevelop-32.png" />
@@ -50,6 +52,9 @@
     <Content Include="favorited.png" />
     <Content Include="background.png" />
     <Content Include="sample.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="CustomCells\PaymentCell.xib" />
   </ItemGroup>
   <Import Project="Sample.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
