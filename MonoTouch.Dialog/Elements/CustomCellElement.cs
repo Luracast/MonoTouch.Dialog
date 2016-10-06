@@ -204,6 +204,7 @@ namespace MonoTouch.Dialog
 		public InnerSection(string caption, MethodInfo addMethod, Type elementType, object[] elementConstructorParameters) : base(caption)
 		{
 			var view = new UITableViewHeaderFooterView();
+			var frame = view.Frame;
 			view.TextLabel.Text = caption;
 			var addButton = new UIButton(UIButtonType.ContactAdd) { TranslatesAutoresizingMaskIntoConstraints = false };
 			addButton.SizeToFit();
@@ -244,12 +245,13 @@ namespace MonoTouch.Dialog
 				}
 			};
 			view.AddSubviews(addButton);
-			var top = 0f;
-			var gap = 16f;
-			var t = NSLayoutConstraint.Create(addButton, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.Top, 1.0f, top);
-			var r = NSLayoutConstraint.Create(addButton, NSLayoutAttribute.Trailing, NSLayoutRelation.Equal, view, NSLayoutAttribute.Trailing, 1.0f, -gap);
+			var top = -10f;
+			var gap = -16f;
+			var t = NSLayoutConstraint.Create(addButton, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.BottomMargin, 1.0f, top);
+			var r = NSLayoutConstraint.Create(addButton, NSLayoutAttribute.Trailing, NSLayoutRelation.Equal, view, NSLayoutAttribute.Trailing, 1.0f, gap);
 			view.AddConstraints(new NSLayoutConstraint[] { t, r });
-
+			frame.Height = 44;
+			view.Frame = frame;
 			HeaderView = view;
 		}
 
