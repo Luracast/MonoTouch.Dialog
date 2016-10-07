@@ -51,6 +51,7 @@ namespace MonoTouch.Dialog
 	/// Base class for all elements in MonoTouch.Dialog
 	/// </summary>
 	public partial class Element : IDisposable {
+		public bool IsReadOnly = false;
 		/// <summary>
 		///  Handle to the container object.
 		/// </summary>
@@ -1896,8 +1897,9 @@ namespace MonoTouch.Dialog
 				entry.ResignFirstResponder ();
 		}
 	}
-	
-	public partial class DateTimeElement : StringElement {
+
+	public partial class DateTimeElement : StringElement
+	{
 		public DateTime? DateValue;
 		public bool IsRequired = false;
 		public bool IsClearing = false;
@@ -1911,9 +1913,10 @@ namespace MonoTouch.Dialog
 #pragma warning disable 67 // The event 'X' is never used
 		public event Action<DateTimeElement> DateSelected;
 #pragma warning restore 67
-		public UIColor BackgroundColor = (UIDevice.CurrentDevice.CheckSystemVersion (7, 0)) ? UIColor.White : UIColor.Black;
-		
-		protected internal NSDateFormatter fmt = new NSDateFormatter () {
+		public UIColor BackgroundColor = (UIDevice.CurrentDevice.CheckSystemVersion(7, 0)) ? UIColor.White : UIColor.Black;
+
+		protected internal NSDateFormatter fmt = new NSDateFormatter()
+		{
 			DateStyle = NSDateFormatterStyle.Short
 		};
 
@@ -1931,22 +1934,27 @@ namespace MonoTouch.Dialog
 		public DateTimeElement(string caption) : this(caption, null)
 		{
 		}
-		
-		public override UITableViewCell GetCell (UITableView tv)
+
+		public override UITableViewCell GetCell(UITableView tv)
 		{
-			Value = FormatDate (DateValue);
-			var cell = base.GetCell (tv);
-			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
-            cell.SelectionStyle = UITableViewCellSelectionStyle.Blue;
+			Value = FormatDate(DateValue);
+			var cell = base.GetCell(tv);
+			if (!IsReadOnly)
+			{
+				cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+				cell.SelectionStyle = UITableViewCellSelectionStyle.Blue;
+			}
 			return cell;
 		}
- 
-		protected override void Dispose (bool disposing)
+
+		protected override void Dispose(bool disposing)
 		{
-			base.Dispose (disposing);
-			if (disposing){
-				if (fmt != null){
-					fmt.Dispose ();
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				if (fmt != null)
+				{
+					fmt.Dispose();
 					fmt = null;
 				}
 #if !__TVOS__
@@ -1957,11 +1965,11 @@ namespace MonoTouch.Dialog
 #endif // !__TVOS__
 			}
 		}
-		
-		protected DateTime GetDateWithKind (DateTime dt)
+
+		protected DateTime GetDateWithKind(DateTime dt)
 		{
 			if (dt.Kind == DateTimeKind.Unspecified)
-				return DateTime.SpecifyKind (dt, DateTimeKind.Local);
+				return DateTime.SpecifyKind(dt, DateTimeKind.Local);
 
 			return dt;
 		}
@@ -1976,7 +1984,7 @@ namespace MonoTouch.Dialog
 		{
 			return dt.HasValue ? FormatDate(dt.Value) : String.Empty;
 		}
-		
+
 #if !__TVOS__
 		public virtual UIDatePicker CreatePicker ()
 		{
@@ -2028,6 +2036,8 @@ namespace MonoTouch.Dialog
 		
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
+			if(IsReadOnly)
+				return;
 			var vc = new MyViewController (this) {
 				Autorotate = dvc.Autorotate
 			};
