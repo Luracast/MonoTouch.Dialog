@@ -387,11 +387,14 @@ namespace MonoTouch.Dialog
 				string caption = null;
 				object[] attrs = mi.GetCustomAttributes(false);
 				bool skip = false;
+				bool readOnly = false;
 				MethodInfo addMethod = null;
 				foreach (var attr in attrs)
 				{
 					if (attr is SkipAttribute || attr is System.Runtime.CompilerServices.CompilerGeneratedAttribute)
 						skip = true;
+					if (attr is ReadOnlyAttribute)
+						readOnly = true;
 					else if (attr is CaptionAttribute)
 						caption = ((CaptionAttribute)attr).Caption;
 					else if (attr is SectionAttribute)
@@ -737,6 +740,7 @@ namespace MonoTouch.Dialog
 
 				if (element == null)
 					continue;
+				element.IsReadOnly = readOnly;
 				section.Add(element);
 				mappings[element] = new MemberAndInstance(mi, o);
 			}
