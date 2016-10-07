@@ -61,6 +61,9 @@ namespace MonoTouch.Dialog
 	
 	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
 	public class SkipAttribute : Attribute {}
+
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false)]
+	public class ReadOnlyAttribute : Attribute { }
 	
 	[AttributeUsage (AttributeTargets.Field | AttributeTargets.Property, Inherited=false)]
 	public class PasswordAttribute : EntryAttribute {
