@@ -28,6 +28,7 @@ namespace Sample
 
 		[Section("Order Form")]
 		public string RefNo = String.Empty;
+		[ReadOnly]
 		[Date]
 		public DateTime DateCreated = DateTime.Now;
 
