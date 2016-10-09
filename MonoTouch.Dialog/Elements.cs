@@ -303,7 +303,8 @@ namespace MonoTouch.Dialog
 				sw = new UISwitch (){
 					BackgroundColor = UIColor.Clear,
 					Tag = 1,
-					On = Value
+					On = Value,
+					Enabled = !IsReadOnly
 				};
 				sw.AddTarget (delegate {
 					Value = sw.On;
@@ -405,6 +406,7 @@ namespace MonoTouch.Dialog
 					BackgroundColor = UIColor.Clear
 				};
 				button = UIButton.FromType (UIButtonType.Custom);
+				button.Enabled = !parent.IsReadOnly;
 				button.TouchDown += delegate {
 					parent.Value = !parent.Value;
 					UpdateImage ();
@@ -554,7 +556,8 @@ namespace MonoTouch.Dialog
 					Continuous = true,
 					Value = this.Value,
 					Tag = 1,
-					AutoresizingMask = UIViewAutoresizing.FlexibleWidth
+					AutoresizingMask = UIViewAutoresizing.FlexibleWidth,
+					Enabled = !IsReadOnly
 				};
 				slider.ValueChanged += delegate {
 					Value = slider.Value;
@@ -626,9 +629,10 @@ namespace MonoTouch.Dialog
 			var cell = tv.DequeueReusableCell (CellKey);
 			if (cell == null){
 				cell = new UITableViewCell (UITableViewCellStyle.Default, CellKey);
-				cell.SelectionStyle = UITableViewCellSelectionStyle.Blue;
+				cell.SelectionStyle = IsReadOnly  ? UITableViewCellSelectionStyle.None : UITableViewCellSelectionStyle.Blue;
 			}
-			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+
+			cell.Accessory = IsReadOnly ? UITableViewCellAccessory.None : UITableViewCellAccessory.DisclosureIndicator;
 			
 			cell.TextLabel.Text = Caption;
 			return cell;
@@ -666,6 +670,8 @@ namespace MonoTouch.Dialog
 		
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
+			if (IsReadOnly)
+				return;
 			int i = 0;
 			var vc = new WebViewController (this) {
 				Autorotate = dvc.Autorotate
@@ -1226,6 +1232,8 @@ namespace MonoTouch.Dialog
 
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
 		{
+			if (IsReadOnly)
+				return;
 			RootElement root = (RootElement) Parent.Parent;
 			if (RadioIdx != root.RadioSelected){
 				UITableViewCell cell;
@@ -1273,6 +1281,8 @@ namespace MonoTouch.Dialog
 		
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
+			if (IsReadOnly)
+				return;
 			Value = !Value;
 			var cell = tableView.CellAt (path);
 			ConfigCell (cell);
@@ -1438,6 +1448,8 @@ namespace MonoTouch.Dialog
 		UIViewController currentController;
 		public override void Selected (DialogViewController dvc, UITableView tableView, NSIndexPath path)
 		{
+			if (IsReadOnly)
+				return;
 			if (picker == null)
 				picker = new UIImagePickerController ();
 			picker.Delegate = new MyDelegate (this, tableView, path);
