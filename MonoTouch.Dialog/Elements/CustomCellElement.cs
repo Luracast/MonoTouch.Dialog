@@ -73,7 +73,31 @@ namespace MonoTouch.Dialog
 
 	#region Elements
 
-	public class CustomCellElement<T> : Element, IProvideValue<T>, IElementSizing
+	public abstract class BaseElement : Element
+	{
+		public event NSAction Tapped;
+
+		public BaseElement(string caption) : base(caption) { }
+
+		public BaseElement(string caption, NSAction tapped) : base(caption)
+		{
+			Tapped += tapped;
+		}
+
+		internal bool HasListeners()
+		{
+			return Tapped != null;
+		}
+
+		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+		{
+			if (Tapped != null)
+				Tapped();
+			tableView.DeselectRow(path, true);
+		}
+	}
+
+	public class CustomCellElement<T> : BaseElement, IProvideValue<T>, IElementSizing
 	{
 		float height = 40;
 		float expandedHeight = 40;
@@ -117,8 +141,6 @@ namespace MonoTouch.Dialog
 
 		public string Format = null;
 
-		public event NSAction Tapped;
-
 		public UITextAlignment Alignment = UITextAlignment.Left;
 
 
@@ -146,20 +168,13 @@ namespace MonoTouch.Dialog
 			{
 				var arr = NSBundle.MainBundle.LoadNib(cellIdentifier, null, null);
 				cell = Runtime.GetNSObject<UITableViewCell>(arr.ValueAt(0));
-				cell.SelectionStyle = (Tapped != null) ? UITableViewCellSelectionStyle.Default : UITableViewCellSelectionStyle.None;
+				cell.SelectionStyle = HasListeners() ? UITableViewCellSelectionStyle.Default : UITableViewCellSelectionStyle.None;
 			}
 
 			if (cell is IUpdate<T>)
 				(cell as IUpdate<T>).Update(Caption, Value, this);
 
 			return cell;
-		}
-
-		public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath indexPath)
-		{
-			if (Tapped != null)
-				Tapped();
-			tableView.DeselectRow(indexPath, true);
 		}
 
 		public override bool Matches(string text)
@@ -383,12 +398,14 @@ namespace MonoTouch.Dialog
 
 				if (mType == null)
 					continue;
+				BaseElement baseElement = null;
 				Element element = null;
 				string caption = null;
 				object[] attrs = mi.GetCustomAttributes(false);
 				bool skip = false;
 				bool readOnly = false;
 				MethodInfo addMethod = null;
+				NSAction invoker = null;
 				foreach (var attr in attrs)
 				{
 					if (attr is SkipAttribute || attr is System.Runtime.CompilerServices.CompilerGeneratedAttribute)
@@ -418,6 +435,23 @@ namespace MonoTouch.Dialog
 							throw new Exception("Did not find method " + mname);
 						if (!addMethod.IsStatic)
 							throw new Exception("method " + mname + " should be static");
+					}
+					else if (attr is OnTapAttribute)
+					{
+						string mname = ((OnTapAttribute)attr).Method;
+
+						if (callbacks == null)
+						{
+							throw new Exception("Your class contains [OnTap] attributes, but you passed a null object for `context' in the constructor");
+						}
+
+						var method = callbacks.GetType().GetMethod(mname);
+						if (method == null)
+							throw new Exception("Did not find method " + mname);
+						invoker = delegate
+						{
+							method.Invoke(method.IsStatic ? null : callbacks, new object[0]);
+						};
 					}
 					else if (attr is CellAttribute)
 					{
@@ -466,13 +500,15 @@ namespace MonoTouch.Dialog
 							{
 								parameters.AddRange(customParams);
 							}
-							element = (Element)Activator.CreateInstance(CustomType, parameters.ToArray());
-							if (element != null)
+							baseElement = (BaseElement)Activator.CreateInstance(CustomType, parameters.ToArray());
+							if (baseElement != null)
 							{
+								if (invoker != null)
+									baseElement.Tapped += invoker;
 								if (section == null)
 									section = new Section();
-								section.Add(element);
-								mappings[element] = new MemberAndInstance(mi, o);
+								section.Add(baseElement);
+								mappings[baseElement] = new MemberAndInstance(mi, o);
 							}
 						}
 						addMethod = null;
