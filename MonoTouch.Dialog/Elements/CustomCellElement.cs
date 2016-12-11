@@ -216,6 +216,16 @@ namespace MonoTouch.Dialog
 			}
 		}
 
+		public void AddItem(T item, Type elementType, object[] elementConstructorParameters)
+		{
+			object[] parameters = new object[elementConstructorParameters.Length + 2];
+			elementConstructorParameters.CopyTo(parameters, 0);
+			parameters[elementConstructorParameters.Length] = (this.Count + 1).ToString();
+			parameters[elementConstructorParameters.Length + 1] = item;
+			var element = (Element)Activator.CreateInstance(elementType, parameters);
+			Add(element);
+		}
+
 		public InnerSection(string caption, MethodInfo addMethod, Type elementType, object[] elementConstructorParameters) : base(caption)
 		{
 			var view = new UITableViewHeaderFooterView();
@@ -228,34 +238,46 @@ namespace MonoTouch.Dialog
 				var result = addMethod.Invoke(null, new object[0]);
 				if (result != null)
 				{
-					if (result is Task<T>)
+					if (result is Task<T[]>)
+					{
+						Task<T[]> task = (Task<T[]>)result;
+						task.ContinueWith((Task<T[]> arg) =>
+						{
+							foreach (T value in arg.Result)
+							{
+								UIApplication.SharedApplication.InvokeOnMainThread(
+									new NSAction(() =>
+									{
+										AddItem(value, elementType, elementConstructorParameters);
+									})
+								);
+							}
+						});
+					}
+					else if (result is Task<T>)
 					{
 						Task<T> task = (Task<T>)result;
 						task.ContinueWith((Task<T> arg) =>
 						{
 							T value = arg.Result;
-							object[] parameters = new object[elementConstructorParameters.Length + 2];
-							elementConstructorParameters.CopyTo(parameters, 0);
-							parameters[elementConstructorParameters.Length] = (this.Count + 1).ToString();
-							parameters[elementConstructorParameters.Length + 1] = value;
-							var element = (Element)Activator.CreateInstance(elementType, parameters);
 							UIApplication.SharedApplication.InvokeOnMainThread(
 								new NSAction(() =>
 								{
-									Add(element);
+									AddItem(value, elementType, elementConstructorParameters);
 								})
 							);
 						});
 					}
-					else
+					else if (result is T[])
 					{
-						T value = (T)result;
-						object[] parameters = new object[elementConstructorParameters.Length + 2];
-						elementConstructorParameters.CopyTo(parameters, 0);
-						parameters[elementConstructorParameters.Length] = (this.Count + 1).ToString();
-						parameters[elementConstructorParameters.Length + 1] = value;
-						var element = (Element)Activator.CreateInstance(elementType, parameters);
-						Add(element);
+						foreach (T value in result as T[])
+						{
+							AddItem(value, elementType, elementConstructorParameters);
+						}
+					}
+					else if (result is T)
+					{
+						AddItem((T)result, elementType, elementConstructorParameters);
 					}
 				}
 			};
