@@ -232,6 +232,7 @@ namespace MonoTouch.Dialog
 			var frame = view.Frame;
 			view.TextLabel.Text = caption;
 			var addButton = new UIButton(UIButtonType.ContactAdd) { TranslatesAutoresizingMaskIntoConstraints = false };
+			addButton.Tag = 100;
 			addButton.SizeToFit();
 			addButton.TouchUpInside += delegate
 			{
