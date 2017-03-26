@@ -310,7 +310,7 @@ namespace MonoTouch.Dialog
 	public class Binder : IDisposable
 	{
 		public RootElement Root;
-		Dictionary<Element, MemberAndInstance> mappings;
+		protected Dictionary<Element, MemberAndInstance> mappings;
 
 		public object UpdatedValue(Element e)
 		{
@@ -325,7 +325,7 @@ namespace MonoTouch.Dialog
 			}
 		}
 
-		class MemberAndInstance
+		protected class MemberAndInstance
 		{
 			public MemberAndInstance(MemberInfo mi, object o)
 			{
@@ -336,7 +336,7 @@ namespace MonoTouch.Dialog
 			public object Obj;
 		}
 
-		static object GetValue(MemberInfo mi, object o)
+		static protected object GetValue(MemberInfo mi, object o)
 		{
 			var fi = mi as FieldInfo;
 			if (fi != null)
@@ -360,7 +360,7 @@ namespace MonoTouch.Dialog
 			setMethod.Invoke(o, new object[] { val });
 		}
 
-		static string MakeCaption(string name)
+		static protected string MakeCaption(string name)
 		{
 			var sb = new StringBuilder(name.Length);
 			bool nextUp = true;
@@ -372,7 +372,8 @@ namespace MonoTouch.Dialog
 					sb.Append(Char.ToUpper(c));
 					nextUp = false;
 				}
-				else {
+				else
+				{
 					if (c == '_')
 					{
 						sb.Append(' ');
@@ -387,7 +388,7 @@ namespace MonoTouch.Dialog
 		}
 
 		// Returns the type for fields and properties and null for everything else
-		static Type GetTypeForMember(MemberInfo mi)
+		static protected Type GetTypeForMember(MemberInfo mi)
 		{
 			if (mi is FieldInfo)
 				return ((FieldInfo)mi).FieldType;
@@ -651,7 +652,8 @@ namespace MonoTouch.Dialog
 						element = new MultilineElement(caption, value);
 					else if (html != null)
 						element = new HtmlElement(caption, value);
-					else {
+					else
+					{
 						var selement = new StringElement(caption, value);
 						element = selement;
 
@@ -787,7 +789,8 @@ namespace MonoTouch.Dialog
 						}
 					}
 				}
-				else {
+				else
+				{
 					var nested = GetValue(mi, o);
 					if (nested != null)
 					{
@@ -806,7 +809,7 @@ namespace MonoTouch.Dialog
 			root.Add(section);
 		}
 
-		class MemberRadioGroup : RadioGroup
+		protected class MemberRadioGroup : RadioGroup
 		{
 			public MemberInfo mi;
 
