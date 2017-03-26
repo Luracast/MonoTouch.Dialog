@@ -408,7 +408,7 @@ namespace MonoTouch.Dialog
 			Populate(callbacks, o, Root);
 		}
 
-		void Populate(object callbacks, object o, RootElement root)
+		protected virtual void Populate(object callbacks, object o, RootElement root)
 		{
 			MemberInfo last_radio_index = null;
 			var members = o.GetType().GetMembers(BindingFlags.DeclaredOnly | BindingFlags.Public |
